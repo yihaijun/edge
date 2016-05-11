@@ -33,7 +33,7 @@
                 
                 <!-- 第三方测试包配置文件加载 -->
                 <value>/WEB-INF/thirdpart/*.properties</value>
-                
+								<value>file:${user.home}/*.properties</value>
             </list>
         </property>
     </bean>

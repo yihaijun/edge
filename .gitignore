@@ -5,3 +5,4 @@
 /.springBeans
 /.idea
 /*.iml
+/src/main/webapp/WEB-INF/third_lib/tisson-sfip-api-1.0.6-SNAPSHOT.jar
