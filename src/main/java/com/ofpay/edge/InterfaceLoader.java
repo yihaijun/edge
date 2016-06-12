@@ -4,6 +4,9 @@
 package com.ofpay.edge;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -130,8 +133,15 @@ public class InterfaceLoader {
      * @return
      */
     public static String getParamDesc(String serviceKey, String inputMethodName) {
+    	if(logger.isDebugEnabled()){
+    		logger.debug("getParamDesc("+serviceKey+"," + inputMethodName +") begin...");
+    	}
         URL url = getRandomRegisterCacheURL(serviceKey);
 
+    	if(logger.isDebugEnabled()){
+    		logger.debug("getParamDesc("+serviceKey+"," + inputMethodName +") url="+url);
+    	}
+    	
         if (url == null) {
             return null;
         }
@@ -142,19 +152,27 @@ public class InterfaceLoader {
 
         try {
             Class<?> clazz = Class.forName(clazzName);
-            logger.debug("got {} in registry !!!!", clazzName);
+        	if(logger.isDebugEnabled()){
+        		logger.debug("got {} in registry !!!!", clazzName);
+        	}
 
-            Method[] methods = clazz.getDeclaredMethods();
-
-            for (Method method : methods) {
+        	//Edit by yihaijun at 2016-06-08
+            //先用Method getMethod(Class<?> clazz, String inputMethodName)定位，不再使用循环
+        	Method method = getMethod(clazz,inputMethodName);
+//            Method[] methods = clazz.getDeclaredMethods();
+//
+//            for (Method method : methods) {
                 String methodName = method.getName();
-                if (methodName.equals(inputMethodName))
+//                if (methodName.equals(inputMethodName))
                     try {
                         Class<?>[] types = method.getParameterTypes();
 
                         if (types != null) {
                             Object[] objs = new Object[types.length];
 
+                        	if(logger.isDebugEnabled()){
+                        		logger.debug("types.length="+types.length);
+                        	}
                             for (int i = 0; i < objs.length; i++) {
                                 try {
                                     Class<?> type = types[i];
@@ -167,23 +185,37 @@ public class InterfaceLoader {
                                     }
                                 } catch (Exception e) {
                                     objs[i] = null;
-                                    logger.error("加载{}方法的参数描述出错", new Object[] { inputMethodName, e });
-                                }
+                                	if(logger.isDebugEnabled()){
+                                		logger.error("加载{}方法的参数描述出错", new Object[] { inputMethodName, e });
+                                	}                                }
                             }
                             paramDesc = JSON.toJSONString(objs, SerializerFeature.QuoteFieldNames,
                                     SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullStringAsEmpty,
                                     SerializerFeature.WriteNullListAsEmpty, SerializerFeature.SortField);
+                        }else{
+                        	if(logger.isDebugEnabled()){
+                        		logger.debug("types is null.");
+                        	}
                         }
                     } catch (Exception e2) {
-                        logger.warn("can not found method {} in class", methodName);
+                    	e2.printStackTrace();
+                    	if(logger.isDebugEnabled()){
+                    		logger.warn("can not found method {} in class", methodName);
+                    	}
                     }
-            }
+//            }
 
         } catch (Exception e) {
-            logger.warn("can not found bean {} in context", clazzName);
+        	e.printStackTrace();
+        	if(logger.isDebugEnabled()){
+        		logger.warn("can not found bean {} in context", clazzName);
+        	}
         }
 
-        return paramDesc;
+    	if(logger.isDebugEnabled()){
+    		logger.debug("getParamDesc("+serviceKey+"," + inputMethodName +") paramDesc="+paramDesc);
+    	}
+    	return paramDesc;
 
     }
 
@@ -242,4 +274,65 @@ public class InterfaceLoader {
             return false;
         }
     }
+    
+	//Add by yihaijun at 2016-06-08
+    //实现Method getMethod(Class<?> clazz, String inputMethodName)
+	static Map<Class<?>, List<Class<?>>> eventTypesCache = new HashMap<Class<?>, List<Class<?>>>();
+
+	private static List<Class<?>> lookupAllEventTypes(Class<?> eventClass) {
+		List<Class<?>> eventTypes = eventTypesCache.get(eventClass);
+		if (eventTypes == null) {
+			eventTypes = new ArrayList<Class<?>>();
+			Class<?> clazz = eventClass;
+			while (clazz != null) {
+				// 获取所有父类和接口的集合
+				eventTypes.add(clazz);
+				addInterfaces(eventTypes, clazz.getInterfaces());
+				clazz = clazz.getSuperclass();
+			}
+			// 然后以eventClass为key,保存到eventTypesCache中
+			eventTypesCache.put(eventClass, eventTypes);
+		}
+		return eventTypes;
+	}
+
+	/** 获取所有接口 */
+	/** Recurses through super interfaces. */
+	static void addInterfaces(List<Class<?>> eventTypes, Class<?>[] interfaces) {
+		for (Class<?> interfaceClass : interfaces) {
+			if (!eventTypes.contains(interfaceClass)) {
+				eventTypes.add(interfaceClass);
+				addInterfaces(eventTypes, interfaceClass.getInterfaces());
+			}
+		}
+	}
+
+	public static Method getMethod(Class<?> clazz, String inputMethodName) {
+		if (clazz == null || inputMethodName == null
+				|| inputMethodName.trim().equals("")) {
+			return null;
+		}
+		Method[] methods = clazz.getDeclaredMethods();
+
+		for (Method method : methods) {
+			String methodName = method.getName();
+			if (methodName.equals(inputMethodName)) {
+				return method;
+			}
+		}
+		List<Class<?>> allInterface = lookupAllEventTypes(clazz);
+		for (Class<?> ic : allInterface) {
+			if (ic == clazz) {
+				continue;
+			}
+			Method method = getMethod(ic, inputMethodName);
+			if (method != null) {
+				return method;
+			}
+		}
+		if (clazz.getSuperclass() == null) {
+			return null;
+		}
+		return getMethod(clazz.getSuperclass(), inputMethodName);
+	}
 }

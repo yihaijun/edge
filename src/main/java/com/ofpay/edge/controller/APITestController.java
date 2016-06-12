@@ -255,6 +255,10 @@ public class APITestController {
     @RequestMapping("getParamDesc.do")
     public @ResponseBody
     String getParamDesc(@RequestParam String serviceKey, @RequestParam String methodName) {
+    	if(logger.isDebugEnabled()){
+    		logger.debug("getParamDesc("+serviceKey+"," + methodName +") begin...");
+    	}
+        
 
         Map<String, Object> result = new HashMap<String, Object>();
 
@@ -274,7 +278,9 @@ public class APITestController {
         result.put("serviceUrls", displayUrls);
 
         String json = JSON.toJSONString(result);
-        logger.debug("{}", json);
+        if(logger.isDebugEnabled()){
+        	logger.debug("{}", json);
+        }
         return json;
     }
 }
