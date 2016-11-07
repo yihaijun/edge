@@ -33,7 +33,8 @@
                 
                 <!-- 第三方测试包配置文件加载 -->
                 <value>/WEB-INF/thirdpart/*.properties</value>
-				<value>file:${user.home}/*.properties</value>
+				<value>file:${user.home}/edge.properties</value>
+				<value>file:${user.dir}/../../edge.properties</value>
             </list>
         </property>
     </bean>

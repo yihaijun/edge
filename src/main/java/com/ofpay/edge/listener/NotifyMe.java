@@ -97,6 +97,9 @@ public class NotifyMe implements InitializingBean, DisposableBean, NotifyListene
             logger.info(url.toFullString());
 
             String clazzName = url.getPath();
+            if(clazzName.indexOf("/")>=0){
+            	clazzName = clazzName.substring(clazzName.lastIndexOf("/")+1);
+            }
             if (Pattern.matches(urlFilterRegex, clazzName)) { // 过滤非关注的URL
 
                 String category = url.getParameter(Constants.CATEGORY_KEY, Constants.PROVIDERS_CATEGORY);

@@ -26,7 +26,9 @@ public final class ClassLoaderUtil {
     /** URLClassLoader的addURL方法 */
     private static Method addURL = initAddMethod();
 
-    private static URLClassLoader system = (URLClassLoader) ClassLoader.getSystemClassLoader();
+//    Edit by yihaijun at 2016-11-04.因为服务接口还可能引用WEB-INF\lib等下的jar包
+//    private static URLClassLoader system = (URLClassLoader) ClassLoader.getSystemClassLoader();
+  private static URLClassLoader system = (URLClassLoader) ClassLoaderUtil.class.getClassLoader();
 
     private static Logger logger = LoggerFactory.getLogger(ClassLoaderUtil.class);
 

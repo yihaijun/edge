@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+		<param name="target" value="System.out" />
+		<param name="encoding" value="UTF-8" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %5p %c{2} - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+	        <param name="levelMin" value="INFO" />
+	        <param name="levelMax" value="FATAL" />
+	    </filter>
+    </appender>
+
+	<appender name="DUBBO-ERROR-FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${user.dir}/../../logs/log4j-edge-dubbo-error.log" />
+		<param name="append" value="true" />
+		<param name="maxFileSize" value="10MB" />
+		<param name="maxBackupIndex" value="100" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %C{6} (%F:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+	        <param name="levelMin" value="ERROR" />
+	        <param name="levelMax" value="FATAL" />
+	    </filter>
+	</appender>
+	
+	<appender name="DUBBO-INFO-FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${user.dir}/../../logs/log4j-edge-dubbo-info.log" />
+		<param name="append" value="true" />
+		<param name="maxFileSize" value="10MB" />
+		<param name="maxBackupIndex" value="100" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %C{6} (%F:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+	        <param name="levelMin" value="INFO" />
+	        <param name="levelMax" value="FATAL" />
+	    </filter>
+	</appender>
+
+	<appender name="DUBBO-DEBUG-FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${user.dir}/../../logs/log4j-edge-dubbo-debug.log" />
+		<param name="append" value="true" />
+		<param name="maxFileSize" value="10MB" />
+		<param name="maxBackupIndex" value="100" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %C{6} (%F:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+	        <param name="levelMin" value="DEBUG" />
+	        <param name="levelMax" value="FATAL" />
+	    </filter>
+	</appender>
+
+	<appender name="OFPAY-DEBUG-FILE" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${user.dir}/../../logs/log4j-edge-ofpay-debug.log" />
+		<param name="append" value="true" />
+		<param name="maxFileSize" value="10MB" />
+		<param name="maxBackupIndex" value="100" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %C{6} (%F:%L) - %m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelRangeFilter">
+	        <param name="levelMin" value="DEBUG" />
+	        <param name="levelMax" value="FATAL" />
+	    </filter>
+	</appender>
+
+	<logger name="org">
+		<level value="ERROR" />
+	</logger>
+	<logger name="com">
+		<level value="ERROR" />
+	</logger>
+	<logger name="com.alibaba.dubbo" additivity="false"> 
+		<level value="DEBUG" />
+		<appender-ref ref="DUBBO-ERROR-FILE" />
+		<appender-ref ref="DUBBO-INFO-FILE" />
+		<appender-ref ref="DUBBO-DEBUG-FILE" />
+	</logger>
+
+	<!-- 
+	<category name="com.ofpay.edge">     
+		<level value="DEBUG" />
+		<appender-ref ref="OFPAY-DEBUG-FILE" />
+	</category>
+	 -->
+
+	<logger name="com.ofpay.edge" additivity="false"> 
+		<level value="DEBUG" />
+		<appender-ref ref="OFPAY-DEBUG-FILE" />
+	</logger>
+
+	<root>
+		<level value="DEBUG" />
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="DUBBO-ERROR-FILE" />
+		<appender-ref ref="DUBBO-INFO-FILE" />
+		<appender-ref ref="DUBBO-DEBUG-FILE" />
+		<appender-ref ref="OFPAY-DEBUG-FILE" />
+	</root>
+</log4j:configuration>

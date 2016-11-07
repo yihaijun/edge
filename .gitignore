@@ -6,3 +6,8 @@
 /.idea
 /*.iml
 /src/main/webapp/WEB-INF/third_lib/tisson-sfip-api-1.0.6-SNAPSHOT.jar
+/src/main/resources/jboss-log4j.xml
+/src/main/webapp/WEB-INF/lib/jboss-common.jar
+/src/main/webapp/WEB-INF/third_lib/dubbo-test-benchmark-api-2.8.4.jar
+/src/main/webapp/WEB-INF/third_lib/eagle-api-0.0.1.jar
+/src/main/webapp/WEB-INF/third_lib/tisson-sfip-api-1.0.6.jar

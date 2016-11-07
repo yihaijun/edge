@@ -44,6 +44,9 @@ public class InterfaceExecutor {
 
         try {
             Object[] params = convertParams(inputParamArray, method.getParameterTypes());
+            if(log.isDebugEnabled()){
+            	log.debug("params="+params);
+            }
             result = method.invoke(target, params);
         } catch (IllegalArgumentException e) {
             result = e.getMessage();

@@ -84,7 +84,11 @@ public class InterfaceLoader {
             reference.setApplication(application);
             reference.setRegistry(registry); // 多个注册中心可以用setRegistries()
             reference.setCheck(false);
-            reference.setInterface(url.getPath());
+            String interfaceName = url.getPath();
+            if(interfaceName.indexOf("/")>=0){
+            	interfaceName = interfaceName.substring(interfaceName.lastIndexOf("/")+1);
+            }
+            reference.setInterface(interfaceName);
             if (StringUtils.hasText(serviceUrl)) {
                 reference.setUrl(serviceUrl); // 指定调用服务
             }
@@ -149,6 +153,9 @@ public class InterfaceLoader {
         String paramDesc = "";
 
         String clazzName = url.getPath();
+        if(clazzName.indexOf("/")>=0){
+        	clazzName = clazzName.substring(clazzName.lastIndexOf("/")+1);
+        }
 
         try {
             Class<?> clazz = Class.forName(clazzName);
@@ -208,7 +215,7 @@ public class InterfaceLoader {
         } catch (Exception e) {
         	e.printStackTrace();
         	if(logger.isDebugEnabled()){
-        		logger.warn("can not found bean {} in context", clazzName);
+        		logger.warn("can not found bean {"+ clazzName +"} in context",e);
         	}
         }
 

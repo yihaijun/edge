@@ -6,6 +6,11 @@ package com.ofpay.edge.controller;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -158,14 +163,24 @@ public class APITestController {
 
             URL url = InterfaceLoader.getRandomRegisterCacheURL(serviceKey);
 
+            if(logger.isDebugEnabled()){
+            	logger.debug("getRandomRegisterCacheURL:" + serviceKey + ":" + url.toFullString());
+            }
+            
             String group = url.getParameter("group");
             String className = url.getPath();
+            
+            if(className.indexOf("/")>=0){
+            	className = className.substring(className.lastIndexOf("/")+1);
+            }
             String version = url.getParameter("version");
 
             try {
                 Class.forName(className); // 忽略上下文中不存在class
             } catch (ClassNotFoundException e) {
-                logger.debug("can not found bean {} in context", className);
+				if (logger.isDebugEnabled()) {
+					logger.debug("can not found bean {} in context", className);
+				}
                 continue;
             }
 
@@ -197,7 +212,9 @@ public class APITestController {
         parentList.add(apidocsNode);
 
         String json = JSON.toJSONString(parentList);
-        logger.debug("{}", json);
+        if(logger.isDebugEnabled()){
+        	logger.debug("{}", json);
+        }
 
         return json;
     }
@@ -221,7 +238,48 @@ public class APITestController {
             String serviceKey = arr[0];
             String mth = arr[1];
 
-            Object serviceBean = InterfaceLoader.getServiceBean(serviceKey, serviceUrl);
+            //Edit by yihaijun at 2016-11-04.为了调试rest协议
+            Object serviceBean = null;
+			try {
+				String interfaceName = serviceKey;
+	            if(interfaceName.indexOf("/")>=0){
+	            	interfaceName = interfaceName.substring(interfaceName.lastIndexOf("/")+1);
+	            }
+				if(logger.isDebugEnabled()){
+					logger.debug("serviceKey="+serviceKey+",serviceUrl="+serviceUrl+",interfaceName="+interfaceName+",methodName="+methodName);
+				}
+				serviceBean = InterfaceLoader.getServiceBean(interfaceName, serviceUrl);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				logger.error("InterfaceLoader.getServiceBean() Throwable:",e);
+				javax.ws.rs.client.Client client2 = null;
+				javax.ws.rs.core.Response response2 = null;
+				try {
+					String serviceUrl2 = serviceUrl;
+	            	if(serviceUrl.startsWith("rest")){
+	            		serviceUrl2 = serviceUrl.replaceAll("rest:", "http:");
+	            		msg = callRestService(serviceUrl2,serviceKey,mth,params);
+	            	}
+		        } catch (Exception e2) {
+		            msg = "调用接口异常:\r\n" + InterfaceExecutor.getStackTrace(e);
+		            msg += "\r\n调用接口异常:\r\n" + InterfaceExecutor.getStackTrace(e2);
+				} finally {
+					if(response2!=null){
+						response2.close();
+					}
+					if(client2!=null){
+						client2.close(); // 在真正开发中不要每次关闭client，比如HTTP长连接是由client持有的
+					}
+				}
+		        result.put("success", true);
+		        result.put("msg", msg);
+
+		        String json = JSON.toJSONString(result);
+		        if(logger.isDebugEnabled()){
+		        	logger.debug("{}", json);
+		        }
+		        return json;
+			}
             if (serviceBean == null) {
                 msg = "找不到服务Bean";
             } else {
@@ -235,7 +293,7 @@ public class APITestController {
 
         } catch (JSONException e) {
             msg = "参数格式错误;";
-        } catch (Exception e) {
+        } catch (Throwable e) {
             msg = "调用接口异常;" + InterfaceExecutor.getStackTrace(e);
         }
 
@@ -243,9 +301,104 @@ public class APITestController {
         result.put("msg", msg);
 
         String json = JSON.toJSONString(result);
-        logger.debug("{}", json);
+        if(logger.isDebugEnabled()){
+        	logger.debug("result={}", json);
+        }
         return json;
     }
+
+	private String callRestService(String serviceUrl, String serviceKey,
+			String methodName, String params) {
+		javax.ws.rs.client.Client client2 = null;
+		javax.ws.rs.core.Response response2 = null;
+		String result = "";
+		String serviceUrl2 = serviceUrl;
+		javax.ws.rs.Path annotation = null;
+		String httpMethod = "post";
+		try {
+	        if(logger.isDebugEnabled()){
+	        	logger.debug("callRestService("+serviceUrl+","+serviceKey+","+methodName+",..) begin...");
+	        }
+
+			Class<?> serviceClass = Class.forName(serviceKey, false, Thread
+					.currentThread().getContextClassLoader());
+			if (serviceClass.isAnnotationPresent(javax.ws.rs.Path.class)) {
+				annotation = (javax.ws.rs.Path) serviceClass
+						.getAnnotation(javax.ws.rs.Path.class);
+				serviceUrl2 = serviceUrl2 + "/" + annotation.value();
+			}else{
+	            URL url = InterfaceLoader.getRandomRegisterCacheURL(serviceKey);
+	            String application = url.getParameter("application");
+
+				serviceUrl2 = serviceUrl2 + "/"+application+"/"+serviceKey.substring(serviceKey.lastIndexOf(".")+1);
+			}
+	        if(logger.isDebugEnabled()){
+	        	logger.debug("callRestService:serviceUrl=["+serviceUrl2+"]");
+	        }
+			Method method = null;
+			for (Method tmpMethod : serviceClass.getMethods()) {
+				if(tmpMethod.getName().equals(methodName)){
+					method = tmpMethod;
+					break;
+				}
+			}
+			annotation = (javax.ws.rs.Path) method
+					.getAnnotation(javax.ws.rs.Path.class);
+			if(annotation!=null){
+				serviceUrl2 = serviceUrl2 + "/" + annotation.value();
+			}else{
+				serviceUrl2 = serviceUrl2 + "/" + methodName;
+			}
+	        if(logger.isDebugEnabled()){
+	        	logger.debug("callRestService:serviceUrl=["+serviceUrl2+"]");
+	        }
+			client2 = ClientBuilder.newClient();
+			javax.ws.rs.client.WebTarget target2 = client2.target(serviceUrl2);
+			String jsonString = params.substring(params.indexOf("[") + 1,
+					params.lastIndexOf("]"));
+	        if(logger.isDebugEnabled()){
+	        	logger.debug("jsonString=" + jsonString);
+	        }
+			Entity<?> request = Entity.entity(JSON.parse(jsonString),
+					MediaType.APPLICATION_JSON_TYPE);
+			if (method.isAnnotationPresent(javax.ws.rs.POST.class)) {
+				httpMethod = HttpMethod.POST;
+			}
+			if (method.isAnnotationPresent(javax.ws.rs.GET.class)) {
+				httpMethod = HttpMethod.GET;
+			}
+			if (httpMethod.equalsIgnoreCase(HttpMethod.POST)) {
+				response2 = target2.request().post(request);
+			} else {
+				response2 = target2.request().get();
+			}
+			if (response2 == null) {
+				throw new RuntimeException(
+						"Failed with HTTP  : post return null");
+			}
+			if (response2.getStatus() != 200) {
+				throw new RuntimeException("Failed with HTTP error code : "
+						+ response2.getStatus());
+			}
+	        if(logger.isDebugEnabled()){
+	        	logger.debug("response2=" + response2);
+	        }
+			if (response2.getEntity() == null) {
+				Object obj = response2.readEntity(Object.class);
+				if (obj != null) {
+					result = obj.toString();
+				} else {
+					result = "response2.readEntity(Object.class) return null";
+				}
+			} else {
+				result = response2.getEntity().toString();
+			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+        	logger.error("callRestService Exception:",e2);
+		}
+		return result;
+	}
 
     /**
      * 获取接口参数描述

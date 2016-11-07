@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="60 seconds" debug="true"  threshold ="all">
+	<timestamp key="bySecond" datePattern="yyyyMMdd'T'HHmmss"/>  
+
+	<contextName>SFIP-${bySecond}</contextName>
+ 	<property name="appSysName" value="ofpay" />
+
+ 	<property name="maxFileSize" value="20MB" />
+ 	<property name="maxFileHistory" value="9" />
+ 	   
+	<property name="appNameDefaultValue" value="edge" />
+	
+	<property name="sfipLogsPath" value="${user.dir}/../../logs" />
+
+	<!-- ==================== 控制台输出 ===================== -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+	</appender>
+
+<appender name="SIFT-FILE-SYSTEM" class="ch.qos.logback.classic.sift.SiftingAppender">
+	<discriminator>
+		<Key>appName</Key>
+		<DefaultValue>${appNameDefaultValue}</DefaultValue>
+	</discriminator>
+<sift>	
+	<appender name="file-${appSysName}-system"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${sfipLogsPath}/slf4j-${appSysName}-system.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${sfipLogsPath}/slf4j-${appSysName}-system.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxHistory>${maxFileHistory}</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+		</encoder>
+	</appender>
+</sift>
+</appender>	
+
+<appender name="SIFT-FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
+	<discriminator>
+		<Key>appName</Key>
+		<DefaultValue>${appNameDefaultValue}</DefaultValue>
+	</discriminator>
+<sift>	
+	<appender name="file-${appSysName}-${appName}"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${sfipLogsPath}/slf4j-${appSysName}-${appName}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${sfipLogsPath}/slf4j-${appSysName}-${appName}.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxHistory>${maxFileHistory}</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>info</level>
+		</filter>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+		</encoder>
+	</appender>
+</sift>
+</appender>	
+
+<appender name="SIFT-FILE-AOP" class="ch.qos.logback.classic.sift.SiftingAppender">
+	<discriminator>
+		<Key>appName</Key>
+		<DefaultValue>${appNameDefaultValue}</DefaultValue>
+	</discriminator>
+<sift>	
+	<appender name="file-${appSysName}-${appName}-aop"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${sfipLogsPath}/slf4j-${appSysName}-${appName}.aop.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${sfipLogsPath}/slf4j-${appSysName}-${appName}.aop.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxHistory>${maxFileHistory}</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+		</encoder>
+	</appender>
+</sift>
+</appender>	
+
+<appender name="SIFT-FILE-SQL" class="ch.qos.logback.classic.sift.SiftingAppender">
+	<discriminator>
+		<Key>appName</Key>
+		<DefaultValue>${appNameDefaultValue}</DefaultValue>
+	</discriminator>
+<sift>	
+	<appender name="file-${appSysName}-${appName}-sql"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${sfipLogsPath}/slf4j-${appSysName}-${appName}.sql.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${sfipLogsPath}/slf4j-${appSysName}-${appName}.sql.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxHistory>${maxFileHistory}</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+		</encoder>
+	</appender>
+</sift>
+</appender>	
+
+<appender name="SIFT-FILE-TRACE" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+                <Key>appName</Key>
+                <DefaultValue>${appNameDefaultValue}</DefaultValue>
+        </discriminator>
+<sift>
+        <appender name="file-${appSysName}-${appName}-trace"
+                class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>${sfipLogsPath}/slf4j-${appSysName}-${appName}.trace.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                        <FileNamePattern>${sfipLogsPath}/slf4j-${appSysName}-${appName}.sql.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxHistory>${maxFileHistory}</maxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+                </rollingPolicy>
+                <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                        <level>TRACE</level>
+                </filter>
+                <encoder>
+                        <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+                </encoder>
+        </appender>
+</sift>
+</appender>
+
+    <logger name="com.tisson" level="debug" addtivity="false">
+        <appender-ref ref="SIFT-FILE"/>
+    </logger>   
+    <logger name="com.regaltec" level="debug" addtivity="false">
+        <appender-ref ref="SIFT-FILE"/>
+    </logger>   
+    <logger name="com.bestpay" level="debug" addtivity="false">
+        <appender-ref ref="SIFT-FILE"/>
+    </logger>   
+    <logger name="cn.com.bestpay" level="debug" addtivity="false">
+        <appender-ref ref="SIFT-FILE"/>
+    </logger>   
+
+    <!--sample:-->
+    <!--
+    <logger name="com.alibaba.dubbo.common.extension" level="trace" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE"/>
+    </logger>
+    --> 
+    <logger name="com.alibaba.dubbo.rpc.protocol.dubbo" level="info" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE"/>
+    </logger>
+    <logger name="org.apache.zookeeper" level="info" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE"/>
+    </logger> 
+    <logger name="org.I0Itec.zkclient" level="info" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE"/>
+    </logger> 
+    <logger name="com.alibaba.dubbo.remoting.transport" level="info" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE"/>
+    </logger>
+    <logger name="com.alibaba.dubbo.common.logger.Logger.Loghelper.stackTrace" level="trace" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE"/>
+    </logger>
+    <logger name="com.bestpay.dst.client.dubbo" level="trace" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE" />
+        <appender-ref ref="SIFT-FILE-AOP" />
+    </logger>   
+    <logger name="com.bestpay.eagle.aop.LogAspect" level="debug" addtivity="false">
+        <appender-ref ref="SIFT-FILE-AOP"/>
+     </logger>
+    
+    <logger name="com.ofpay" level="trace" addtivity="false">
+        <appender-ref ref="SIFT-FILE-TRACE"/>
+     </logger>
+
+	<root level="info">
+		<!--appender-ref ref="CONSOLE" /-->
+        <appender-ref ref="SIFT-FILE-SYSTEM"/>
+	</root>
+</configuration>
