@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.dubbo.common.URL;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.ofpay.edge.InterfaceExecutor;
 import com.ofpay.edge.InterfaceLoader;
@@ -161,7 +162,7 @@ public class APITestController {
         // beanName格式：group/com.xxx.xxxProvider:version
         for (String serviceKey : serviceKeySet) {
 
-            URL url = InterfaceLoader.getRandomRegisterCacheURL(serviceKey);
+            URL url = InterfaceLoader.getRandomRegisterCacheURL(serviceKey,null);
 
             if(logger.isDebugEnabled()){
             	logger.debug("getRandomRegisterCacheURL:" + serviceKey + ":" + url.toFullString());
@@ -246,7 +247,7 @@ public class APITestController {
 	            	interfaceName = interfaceName.substring(interfaceName.lastIndexOf("/")+1);
 	            }
 				if(logger.isDebugEnabled()){
-					logger.debug("serviceKey="+serviceKey+",serviceUrl="+serviceUrl+",interfaceName="+interfaceName+",methodName="+methodName);
+					logger.debug("serviceKey="+serviceKey+",serviceUrl="+serviceUrl+",interfaceName="+interfaceName+",methodName="+methodName+",mth="+mth);
 				}
 				serviceBean = InterfaceLoader.getServiceBean(interfaceName, serviceUrl);
 			} catch (Throwable e) {
@@ -287,7 +288,32 @@ public class APITestController {
                 if (serviceMethod == null) {
                     msg = "找不到服务Method";
                 } else {
-                    msg = InterfaceExecutor.execute(serviceBean, serviceMethod, JSON.parseArray(params));
+                    if(logger.isDebugEnabled()){
+                    	logger.debug("params={}", params);
+                    }
+                    JSONArray  json = null;
+                	try {
+						json = JSON.parseArray(params);
+						if(logger.isDebugEnabled()){
+							logger.debug("json.toArray().length={}", json.toArray().length);
+							logger.debug("json.toArray()[0]={}", json.toArray()[0]);
+						}
+					} catch (Exception e) {
+						logger.error("JSON.parseArray("+params+") Exception:",e);
+					}
+					if(json.toArray() == null || json.toArray().length <1 || json.toArray()[0].equals("")){
+	                	try {
+						json = JSON.parseArray("[{\"msg\":\"helloWord\"}]");
+						if(logger.isDebugEnabled()){
+							logger.debug("json.toArray().length={}", json.toArray().length);
+							logger.debug("json.toArray()[0]{}", json.toArray()[0]);
+						}
+						} catch (Exception e) {
+							logger.error("JSON.parseArray(...) Exception:",e);
+						}
+					}
+						
+                    msg = InterfaceExecutor.execute(serviceBean, serviceMethod, json);
                 }
             }
 
@@ -327,7 +353,7 @@ public class APITestController {
 						.getAnnotation(javax.ws.rs.Path.class);
 				serviceUrl2 = serviceUrl2 + "/" + annotation.value();
 			}else{
-	            URL url = InterfaceLoader.getRandomRegisterCacheURL(serviceKey);
+	            URL url = InterfaceLoader.getRandomRegisterCacheURL(serviceKey,"rest");
 	            String application = url.getParameter("application");
 
 				serviceUrl2 = serviceUrl2 + "/"+application+"/"+serviceKey.substring(serviceKey.lastIndexOf(".")+1);

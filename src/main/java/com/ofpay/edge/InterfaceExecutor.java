@@ -46,11 +46,16 @@ public class InterfaceExecutor {
             Object[] params = convertParams(inputParamArray, method.getParameterTypes());
             if(log.isDebugEnabled()){
             	log.debug("params="+params);
+            	if(params != null && params.length >0){
+                	log.debug("params[0]="+params[0]);
+            	}
             }
             result = method.invoke(target, params);
         } catch (IllegalArgumentException e) {
+        	log.error("execute IllegalArgumentException:",e);
             result = e.getMessage();
         } catch (Exception e) {
+        	log.error("execute Exception:",e);
             throw e;
         }
 
@@ -78,8 +83,13 @@ public class InterfaceExecutor {
         for (int i = 0; i < paramArr.length; i++) {
             Object param = paramArr[i];
             Class<?> paramType = paramTypes[i];
-
+			if (log.isDebugEnabled()) {
+				log.debug("paramArr[" + i + "]=" + paramArr[i] +",paramType="+paramType);
+			}
             params[i] = TypeUtils.cast(param, paramType, ParserConfig.getGlobalInstance());
+			if (log.isDebugEnabled()) {
+				log.debug("params[" + i + "]=" + params[i]);
+			}
 //            if (InterfaceLoader.isWrapClass(paramType)) {
 //                params[i] = ConvertUtils.convert(param, paramType);
 //            } else if (paramType.isEnum()) {

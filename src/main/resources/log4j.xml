@@ -50,7 +50,7 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %C{6} (%F:%L) - %m%n" />
 		</layout>
 		<filter class="org.apache.log4j.varia.LevelRangeFilter">
-	        <param name="levelMin" value="DEBUG" />
+	        <param name="levelMin" value="trace" />
 	        <param name="levelMax" value="FATAL" />
 	    </filter>
 	</appender>
@@ -76,7 +76,7 @@
 		<level value="ERROR" />
 	</logger>
 	<logger name="com.alibaba.dubbo" additivity="false"> 
-		<level value="DEBUG" />
+		<level value="trace" />
 		<appender-ref ref="DUBBO-ERROR-FILE" />
 		<appender-ref ref="DUBBO-INFO-FILE" />
 		<appender-ref ref="DUBBO-DEBUG-FILE" />
@@ -95,7 +95,7 @@
 	</logger>
 
 	<root>
-		<level value="DEBUG" />
+		<level value="trace" />
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="DUBBO-ERROR-FILE" />
 		<appender-ref ref="DUBBO-INFO-FILE" />

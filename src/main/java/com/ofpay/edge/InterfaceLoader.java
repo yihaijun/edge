@@ -73,7 +73,11 @@ public class InterfaceLoader {
         ReferenceConfig<Object> reference = null;// ref_config_cache.get(serviceKey + serviceUrl);
 
         if (reference == null) {
-            URL url = getRandomRegisterCacheURL(serviceKey);
+        	String protocol = "";
+        	if (StringUtils.hasText(serviceUrl)) {
+        		protocol = serviceUrl.substring(0,serviceUrl.indexOf(":"));
+        	}
+            URL url = getRandomRegisterCacheURL(serviceKey,protocol);
 
             if (url == null) {
                 return null;
@@ -97,6 +101,10 @@ public class InterfaceLoader {
 
             // ref_config_cache.put(serviceKey + serviceUrl, reference);
         }
+
+        if(logger.isTraceEnabled()){
+    		logger.trace("Now reference.get() begin.reference.getUrl()="+reference.getUrl());
+    	}
 
         // 和本地bean一样使用xxxService
         return reference.get(); // 注意：此代理对象内部封装了所有通讯细节，对象较重，请缓存复用
@@ -140,10 +148,10 @@ public class InterfaceLoader {
     	if(logger.isDebugEnabled()){
     		logger.debug("getParamDesc("+serviceKey+"," + inputMethodName +") begin...");
     	}
-        URL url = getRandomRegisterCacheURL(serviceKey);
+        URL url = getRandomRegisterCacheURL(serviceKey,null);
 
-    	if(logger.isDebugEnabled()){
-    		logger.debug("getParamDesc("+serviceKey+"," + inputMethodName +") url="+url);
+    	if(logger.isTraceEnabled()){
+    		logger.trace("getParamDesc("+serviceKey+"," + inputMethodName +") url="+url);
     	}
     	
         if (url == null) {
@@ -242,6 +250,9 @@ public class InterfaceLoader {
             for (Long id : urlSet) {
                 URL dubboURL = map.get(id);
                 serviceUrls[i] = dubboURL.getProtocol() + "://" + dubboURL.getHost() + ":" + dubboURL.getPort();
+                if(dubboURL.getAbsolutePath().lastIndexOf("/")>0){
+            		serviceUrls[i] = serviceUrls[i] + dubboURL.getAbsolutePath().substring(0,dubboURL.getAbsolutePath().lastIndexOf("/")+1); 
+            	}
                 i++;
             }
         }
@@ -253,12 +264,19 @@ public class InterfaceLoader {
      * @param serviceKey 格式为：group/packege.beanName:version;
      * @return
      */
-    public static URL getRandomRegisterCacheURL(String serviceKey) {
+    public static URL getRandomRegisterCacheURL(String serviceKey,String protocol) {
         Map<Long, URL> map = InterfaceLoader.getRegistryProviderCache().get(serviceKey);
+        URL result = null;
         if (map != null) {
             Set<Long> urlSet = map.keySet();
             for (Long id : urlSet) {
-                return map.get(id);
+            	result = map.get(id);
+            	if(protocol==null || protocol.trim().equalsIgnoreCase("")){
+            		return result;
+            	}
+            	if(result.getProtocol().equalsIgnoreCase(protocol)){
+            		return result;
+            	}
             }
         }
         return null;

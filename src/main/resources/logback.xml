@@ -15,7 +15,7 @@
 	<!-- ==================== 控制台输出 ===================== -->
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread]%n</pattern>
 		</encoder>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>info</level>
@@ -42,7 +42,7 @@
 			<level>info</level>
 		</filter>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread]%n</pattern>
 		</encoder>
 	</appender>
 </sift>
@@ -68,7 +68,7 @@
 			<level>info</level>
 		</filter>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread]%n</pattern>
 		</encoder>
 	</appender>
 </sift>
@@ -94,7 +94,7 @@
 			<level>debug</level>
 		</filter>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread]%n</pattern>
 		</encoder>
 	</appender>
 </sift>
@@ -120,7 +120,7 @@
 			<level>debug</level>
 		</filter>
 		<encoder>
-			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread]%n</pattern>
 		</encoder>
 	</appender>
 </sift>
@@ -136,7 +136,7 @@
                 class="ch.qos.logback.core.rolling.RollingFileAppender">
                 <file>${sfipLogsPath}/slf4j-${appSysName}-${appName}.trace.log</file>
                 <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                        <FileNamePattern>${sfipLogsPath}/slf4j-${appSysName}-${appName}.sql.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+                        <FileNamePattern>${sfipLogsPath}/slf4j-${appSysName}-${appName}.trace.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
             <maxHistory>${maxFileHistory}</maxHistory>
             <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>${maxFileSize}</maxFileSize>
@@ -146,7 +146,7 @@
                         <level>TRACE</level>
                 </filter>
                 <encoder>
-                        <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread] [%X]%n</pattern>
+                        <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%-5level] %msg [%logger{36}:%L] [%thread]%n</pattern>
                 </encoder>
         </appender>
 </sift>
