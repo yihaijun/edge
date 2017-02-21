@@ -82,6 +82,10 @@ public class InterfaceLoader {
             if (url == null) {
                 return null;
             }
+            if(logger.isTraceEnabled()){
+				logger.trace("getRandomRegisterCacheURL(" + serviceKey + ","
+						+ protocol + ") rturn " + url.toFullString());
+        	}
 
             // 引用远程服务
             reference = new ReferenceConfig<Object>(); // 此实例很重，封装了与注册中心的连接以及与提供者的连接，请自行缓存，否则可能造成内存和连接泄漏
@@ -98,12 +102,21 @@ public class InterfaceLoader {
             }
             reference.setGroup(url.getParameter("group"));
             reference.setVersion(url.getParameter("version"));
+            Integer timeout = 5000;
+            if(url.getParameter("timeout") != null  && !url.getParameter("timeout").trim().equals("")){
+            	try {
+					timeout =  new Integer(url.getParameter("timeout")) + 5000;
+				} catch (NumberFormatException e) {
+					e.printStackTrace();
+				}
+            }
+            reference.setTimeout(timeout);
 
             // ref_config_cache.put(serviceKey + serviceUrl, reference);
         }
 
         if(logger.isTraceEnabled()){
-    		logger.trace("Now reference.get() begin.reference.getUrl()="+reference.getUrl());
+    		logger.trace("Now reference.get() begin.reference.getUrl()="+reference.getUrl() +",timeout="+reference.getTimeout());
     	}
 
         // 和本地bean一样使用xxxService

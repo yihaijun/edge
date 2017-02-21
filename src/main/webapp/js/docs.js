@@ -113,13 +113,14 @@ DocPanel = Ext.extend(Ext.Panel, {
                         var frm = this.formPanel.getForm();
                         var paramField = frm.findField("params");
                         var formatParam;
-                        try{
-                            // Json 格式化
-                            formatParam = js_beautify(paramField.getValue(), 4, ' ');
-                        } catch(err) {
-                            return;
-                        }
-                        paramField.setValue(formatParam);
+//                        try{
+//                            // Json 格式化
+//                            formatParam = js_beautify(paramField.getValue(), 4, ' ');
+//                        } catch(err) {
+//                            return;
+//                        }
+//                        paramField.setValue(formatParam);
+                        formatParam = paramField.getValue();
                     }
                 },
                 allowBlank : true
@@ -134,14 +135,15 @@ DocPanel = Ext.extend(Ext.Panel, {
                     var resultArea = this.resultArea;
 
                     var formatParam;
-                    try{
-                        // Json 格式化
-                        formatParam = js_beautify(paramField.getValue(), 4, ' ');
-                    } catch(err) {
-                        resultArea.setValue("JSON格式错误");
-                        return;
-                    }
-                    paramField.setValue(formatParam);
+//                    try{
+//                        // Json 格式化
+//                        formatParam = js_beautify(paramField.getValue(), 4, ' ');
+//                    } catch(err) {
+//                        resultArea.setValue("JSON格式错误");
+//                        return;
+//                    }
+//                    paramField.setValue(formatParam);
+                    formatParam = paramField.getValue();
 
                     frm.submit({
                         waitMsg : '正在提交数据',

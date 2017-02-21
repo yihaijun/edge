@@ -75,7 +75,7 @@ public class InterfaceExecutor {
 
         if (paramTypes.length != paramArr.length) {
             log.warn("参数值与参数类型个数不匹配, paramList:{}", new Object[] { inputParamArray });
-            throw new IllegalArgumentException("参数错误，传入的参数个数与接口不匹配");
+            throw new IllegalArgumentException("参数错误，传入的参数个数与接口不匹配("+paramTypes.length +"!="+ paramArr.length+")");
         }
 
         Object[] params = new Object[paramArr.length];

@@ -301,15 +301,17 @@ public class APITestController {
 					} catch (Exception e) {
 						logger.error("JSON.parseArray("+params+") Exception:",e);
 					}
-					if(json.toArray() == null || json.toArray().length <1 || json.toArray()[0].equals("")){
-	                	try {
-						json = JSON.parseArray("[{\"msg\":\"helloWord\"}]");
-						if(logger.isDebugEnabled()){
-							logger.debug("json.toArray().length={}", json.toArray().length);
-							logger.debug("json.toArray()[0]{}", json.toArray()[0]);
-						}
+					if(json == null || json.toArray() == null || json.toArray().length <1 || json.toArray()[0].equals("")){
+						String newparam = "";
+						try {
+	                	    newparam = "[\"" +params.replaceAll("\\\"", "\\\\\"") +"\"]";
+	                		json = JSON.parseArray(newparam);
+							if(logger.isDebugEnabled()){
+								logger.debug("json.toArray().length={}", json.toArray().length);
+								logger.debug("json.toArray()[0]{}", json.toArray()[0]);
+							}
 						} catch (Exception e) {
-							logger.error("JSON.parseArray(...) Exception:",e);
+							logger.error("JSON.parseArray(...) Exception:\r\nnewparam=["+newparam+"]",e);
 						}
 					}
 						
@@ -329,6 +331,23 @@ public class APITestController {
         String json = JSON.toJSONString(result);
         if(logger.isDebugEnabled()){
         	logger.debug("result={}", json);
+        }
+        json=json.replaceAll("\\\\{2}t", "\t");
+        if(logger.isDebugEnabled()){
+        	logger.debug("result2={}", json);
+        }
+        json=json.replaceAll("\\\\{2}r", "");
+        if(logger.isDebugEnabled()){
+        	logger.debug("result3={}", json);
+        }
+        json=json.replaceAll("\\\\{2}n", "\t \t");
+        if(logger.isDebugEnabled()){
+        	logger.debug("result4={}", json);
+        }
+        json=json.replaceAll("\\\\{2}\"", "\"");
+
+        if(logger.isDebugEnabled()){
+        	logger.debug("result5={}", json);
         }
         return json;
     }
