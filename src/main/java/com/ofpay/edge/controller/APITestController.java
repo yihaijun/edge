@@ -153,7 +153,7 @@ public class APITestController {
 
         JSONTreeNode apidocsNode = new JSONTreeNode();
         apidocsNode.setId("ApiList");
-        apidocsNode.setText("ApiList");
+        apidocsNode.setText("ApiList(From " + InterfaceLoader.getRegistryAddress() + ")");
         apidocsNode.setIconCls("icon-docs");
         apidocsNode.setFullPath("ApiList");
         apidocsNode.setFullText("ApiList");

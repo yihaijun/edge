@@ -48,7 +48,23 @@ public class InterfaceLoader {
         InterfaceLoader.registry = registry;
         InterfaceLoader.application = application;
     }
-
+    
+    public static String getRegistryAddress(){
+    	if(registry==null){
+    		return "";
+    	}
+    	if(registry.getAddress() == null || registry.getAddress().trim().equals("")){
+    		if(registry.getProtocol() == null || registry.getProtocol().trim().equals("")){
+        		if(registry.getFile() == null || registry.getFile().trim().equals("")){
+            		return "unknow";
+            	}
+        		return registry.getFile();
+        	}
+    		return registry.getProtocol();
+    	}
+    	return registry.getAddress();
+    }
+ 
     public static void destroyReference(String serviceKey, String serviceUrl) {
 
         for (Map.Entry<String, ReferenceConfig<Object>> refEntry : ref_config_cache.entrySet()) {
