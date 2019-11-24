@@ -86,7 +86,7 @@ public class InterfaceExecutor {
 			if (log.isDebugEnabled()) {
 				log.debug("paramArr[" + i + "]=" + paramArr[i] +",paramType="+paramType);
 			}
-            params[i] = TypeUtils.cast(param, paramType, ParserConfig.getGlobalInstance());
+            params[i] = com.ofpay.edge.util.TypeUtils.cast(param, paramType, ParserConfig.getGlobalInstance());
 			if (log.isDebugEnabled()) {
 				log.debug("params[" + i + "]=" + params[i]);
 			}
