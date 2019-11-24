@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.slf4j.LoggerFactory;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -53,6 +55,8 @@ import com.alibaba.fastjson.parser.JSONScanner;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.parser.deserializer.FieldDeserializer;
 import com.alibaba.fastjson.util.FieldInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author wenshao<szujobs@hotmail.com>
@@ -650,6 +654,21 @@ return com.alibaba.fastjson.util.TypeUtils. castToBytes(value);
             return (T) cast(obj, (Class<T>) type, mapping);
         }
 
+		String typeToString = ""+type;
+        if (typeToString.indexOf("java.util.Hashtable") >= 0) {
+        	Logger log = LoggerFactory.getLogger(com.ofpay.edge.util.TypeUtils.class);
+			if (log.isTraceEnabled()) {
+				log.trace("type=" + type + "obj.getClass()=" + obj.getClass()
+						+ ",obj.toString()" + obj.toString() + ",obj=" + obj);
+			}
+        	java.util.Hashtable<String, Object> params = com.alibaba.fastjson.JSONObject.parseObject(obj.toString(), new TypeReference<java.util.Hashtable<String, Object>>(){});
+			if (log.isTraceEnabled()) {
+				log.trace("params=" + params);
+			}
+        	return (T) params;
+//        	return (T) obj;
+        }
+
         if (type instanceof ParameterizedType) {
             return (T) cast(obj, (ParameterizedType) type, mapping);
         }
@@ -665,8 +684,17 @@ return com.alibaba.fastjson.util.TypeUtils. castToBytes(value);
             return (T) obj;
         }
 
-        if (type instanceof java.util.Hashtable) {
+		typeToString = ""+type;
+        if (typeToString.indexOf("java.util.Hashtable") >= 0) {
+        	Logger log = LoggerFactory.getLogger(com.ofpay.edge.util.TypeUtils.class);
+			if (log.isTraceEnabled()) {
+				log.trace("type=" + type + "obj.getClass()=" + obj.getClass()
+						+ ",obj.toString()" + obj.toString() + ",obj=" + obj);
+			}
         	java.util.Hashtable<String, Object> params = com.alibaba.fastjson.JSONObject.parseObject(obj.toString(), new TypeReference<java.util.Hashtable<String, Object>>(){});
+			if (log.isTraceEnabled()) {
+				log.trace("params=" + params);
+			}
         	return (T) params;
 //        	return (T) obj;
         }
@@ -722,6 +750,25 @@ return com.alibaba.fastjson.util.TypeUtils. castToBytes(value);
             if (argType instanceof WildcardType) {
                 return (T) cast(obj, rawTye, mapping);
             }
+        }
+
+    	Logger log = LoggerFactory.getLogger(com.ofpay.edge.util.TypeUtils.class);
+		if (log.isTraceEnabled()) {
+			log.trace("type=" + type +",type.getClass()=" +type.getClass()+ ",obj.getClass()=" + obj.getClass()
+					+ ",obj.toString()" + obj.toString() + ",obj=" + obj);
+		}
+		String typeToString = ""+type;
+        if (typeToString.indexOf("java.util.Hashtable") >= 0) {
+			if (log.isTraceEnabled()) {
+				log.trace("type=" + type + ",obj.getClass()=" + obj.getClass()
+						+ ",obj.toString()" + obj.toString() + ",obj=" + obj);
+			}
+        	java.util.Hashtable<String, Object> params = com.alibaba.fastjson.JSONObject.parseObject(obj.toString(), new TypeReference<java.util.Hashtable<String, Object>>(){});
+			if (log.isTraceEnabled()) {
+				log.trace("params=" + params);
+			}
+        	return (T) params;
+//        	return (T) obj;
         }
 
         throw new JSONException("can not cast to : " + type);
