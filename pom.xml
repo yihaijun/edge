@@ -26,6 +26,7 @@
         <javassist.version>3.12.1.GA</javassist.version>
         <redisclient.version>2.1.0</redisclient.version>
         <commons.lang.version>2.6</commons.lang.version>
+		<lombok.version>1.16.10</lombok.version>
     </properties>
 
     <dependencies>
@@ -356,6 +357,11 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 			<!--scope>provided</scope-->
+		</dependency>
+ 		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
 		</dependency>
     </dependencies>
 
